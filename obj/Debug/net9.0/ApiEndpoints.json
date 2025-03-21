@@ -1,0 +1,66 @@
+[
+  {
+    "ContainingType": "AuthController",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/auth/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AuthController\u002BForgotPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AuthController",
+    "Method": "Login",
+    "RelativePath": "api/auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AuthController\u002BLoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AuthController",
+    "Method": "Register",
+    "RelativePath": "api/auth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "user",
+        "Type": "TourismGalle.Models.User",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "AuthController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/auth/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "AuthController\u002BResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

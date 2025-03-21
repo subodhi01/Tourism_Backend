@@ -1,0 +1,6 @@
+@TourismGalle_HostAddress = http://localhost:5136
+
+GET {{TourismGalle_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

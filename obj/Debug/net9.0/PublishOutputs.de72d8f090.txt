@@ -1,0 +1,12 @@
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\TourismGalle.exe
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\appsettings.Development.json
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\appsettings.json
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\TourismGalle.dll
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\TourismGalle.deps.json
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\TourismGalle.runtimeconfig.json
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\TourismGalle.pdb
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\Microsoft.AspNetCore.OpenApi.dll
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\Microsoft.OpenApi.dll
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\Toursim\TourismGalle\obj\Debug\net9.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll
