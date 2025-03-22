@@ -1,13 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "hZwEPARLbtQ=",
+  "dgSpecHash": "JQ/c4RZNWRw=",
   "success": true,
-  "projectFilePath": "E:\\Tourism_Galle\\TourismGalle\\TourismGalle.csproj",
+  "projectFilePath": "E:\\Y3S2\\ITPM\\Tourism_Backend\\TourismGalle.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dahan\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
+    "C:\\Users\\dahan\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\mailkit\\4.11.0\\mailkit.4.11.0.nupkg.sha512",
     "C:\\Users\\dahan\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.3\\microsoft.aspnetcore.openapi.9.0.3.nupkg.sha512",
