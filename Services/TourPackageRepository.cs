@@ -45,7 +45,9 @@ namespace TourismGalle.Services
                 package.Description,
                 package.Price,
                 package.DurationDays,
-                package.Place
+                package.Place,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
             return await connection.ExecuteAsync("AddTourPackage", parameters, commandType: CommandType.StoredProcedure);
         }
@@ -60,7 +62,8 @@ namespace TourismGalle.Services
                 package.Description,
                 package.Price,
                 package.DurationDays,
-                package.Place
+                package.Place,
+                UpdatedAt = DateTime.UtcNow
             };
             return await connection.ExecuteAsync("UpdateTourPackage", parameters, commandType: CommandType.StoredProcedure);
         }

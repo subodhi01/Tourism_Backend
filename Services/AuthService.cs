@@ -1,94 +1,98 @@
 ﻿using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using TourismGalle.Models;
+using TourismGalle.Data;
 using System;
 using System.Threading.Tasks;
 
-public class AuthService
+namespace TourismGalle.Services
 {
-    private readonly ApplicationDbContext _context;
-    private readonly EmailService _emailService;
-
-    public AuthService(ApplicationDbContext context, EmailService emailService)
+    public class AuthService
     {
-        _context = context;
-        _emailService = emailService;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-    // ✅ Register (Signup) using Stored Procedure
-    public async Task<bool> Register(User user)
-    {
-        // Check if email already exists
-        var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
-        if (emailExists)
-            return false; // Email already exists
+        public AuthService(ApplicationDbContext context, EmailService emailService)
+        {
+            _context = context;
+            _emailService = emailService;
+        }
 
-        // Hash the password
-        user.PasswordHash = HashPassword(user.Password);
+        // ✅ Register (Signup) using Stored Procedure
+        public async Task<bool> Register(User user)
+        {
+            // Check if email already exists
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+            if (emailExists)
+                return false; // Email already exists
 
-        // Call stored procedure for registration
-        await _context.Database.ExecuteSqlInterpolatedAsync(
-            $"EXEC RegisterUser @FullName={user.FullName}, @Email={user.Email}, @PasswordHash={user.PasswordHash}, @Role={user.Role}"
-        );
+            // Hash the password
+            user.PasswordHash = HashPassword(user.Password);
 
-        return true;
-    }
+            // Call stored procedure for registration
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"EXEC RegisterUser @FullName={user.FullName}, @Email={user.Email}, @PasswordHash={user.PasswordHash}, @Role={user.Role}"
+            );
 
-    // ✅ Login using Stored Procedure
-    public async Task<User?> Login(string email, string password)
-    {
-        var users = await _context.Users
-            .FromSqlInterpolated($"EXEC GetUserByEmail @Email={email}")
-            .ToListAsync();
+            return true;
+        }
 
-        var user = users.FirstOrDefault();
+        // ✅ Login using Stored Procedure
+        public async Task<User?> Login(string email, string password)
+        {
+            var users = await _context.Users
+                .FromSqlInterpolated($"EXEC GetUserByEmail @Email={email}")
+                .ToListAsync();
 
-        if (user == null || !VerifyPassword(password, user.PasswordHash))
-            return null;
+            var user = users.FirstOrDefault();
 
-        return user;
-    }
+            if (user == null || !VerifyPassword(password, user.PasswordHash))
+                return null;
 
-    // ✅ Request Password Reset
-    public async Task<bool> RequestPasswordReset(string email)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null) return false; // User not found
+            return user;
+        }
 
-        // Generate reset token
-        user.ResetToken = Guid.NewGuid().ToString();
-        user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
-        await _context.SaveChangesAsync();
+        // ✅ Request Password Reset
+        public async Task<bool> RequestPasswordReset(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return false; // User not found
 
-        // Send reset email
-        await _emailService.SendPasswordResetEmail(user.Email, user.ResetToken);
+            // Generate reset token
+            user.ResetToken = Guid.NewGuid().ToString();
+            user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
+            await _context.SaveChangesAsync();
 
-        return true;
-    }
+            // Send reset email
+            await _emailService.SendPasswordResetEmail(user.Email, user.ResetToken);
 
-    // ✅ Reset Password
-    public async Task<bool> ResetPassword(string token, string newPassword)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token && u.ResetTokenExpiry > DateTime.UtcNow);
-        if (user == null) return false; // Invalid or expired token
+            return true;
+        }
 
-        // Hash the new password and update
-        user.PasswordHash = HashPassword(newPassword);
-        user.ResetToken = null; // Clear token after use
-        user.ResetTokenExpiry = null;
+        // ✅ Reset Password
+        public async Task<bool> ResetPassword(string token, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token && u.ResetTokenExpiry > DateTime.UtcNow);
+            if (user == null) return false; // Invalid or expired token
 
-        await _context.SaveChangesAsync();
-        return true;
-    }
+            // Hash the new password and update
+            user.PasswordHash = HashPassword(newPassword);
+            user.ResetToken = null; // Clear token after use
+            user.ResetTokenExpiry = null;
 
-    // ✅ Password Hashing using BCrypt
-    private string HashPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password);
-    }
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
-    private bool VerifyPassword(string password, string hash)
-    {
-        return BCrypt.Net.BCrypt.Verify(password, hash);
+        // ✅ Password Hashing using BCrypt
+        private string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        private bool VerifyPassword(string password, string hash)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hash);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TourismGalle.Services;
 using TourismGalle.Models;
+using TourismGalle.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
