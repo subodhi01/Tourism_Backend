@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TourismGalle.Models;
 
 public class ApplicationDbContext : DbContext
@@ -9,8 +8,6 @@ public class ApplicationDbContext : DbContext
         {
         }
     public DbSet<User> Users { get; set; } // ✅ Add Users Table
+    public DbSet<Review> Reviews { get; set; }
 
 }
-
-
-

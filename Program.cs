@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TourismGalle.Services;
+using TourismGalle.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add CORS policy
@@ -27,7 +29,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>(); // Register Email Service
 builder.Services.AddScoped<TourPackageRepository>();
-
+builder.Services.AddScoped<IReviewService, ReviewService>();  // Register ReviewService
 
 
 var app = builder.Build();
