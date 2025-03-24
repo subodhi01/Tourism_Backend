@@ -49,6 +49,22 @@
   },
   {
     "ContainingType": "TourismGalle.Controllers.AuthController",
+    "Method": "ResendOTP",
+    "RelativePath": "api/auth/resend-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TourismGalle.Controllers.AuthController\u002BResendOTPRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TourismGalle.Controllers.AuthController",
     "Method": "ResetPassword",
     "RelativePath": "api/auth/reset-password",
     "HttpMethod": "POST",
@@ -58,6 +74,22 @@
       {
         "Name": "request",
         "Type": "TourismGalle.Controllers.AuthController\u002BResetPasswordRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TourismGalle.Controllers.AuthController",
+    "Method": "VerifyEmail",
+    "RelativePath": "api/auth/verify-email",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "TourismGalle.Controllers.AuthController\u002BEmailVerificationRequest",
         "IsRequired": true
       }
     ],

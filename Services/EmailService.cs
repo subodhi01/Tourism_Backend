@@ -20,9 +20,22 @@ public class EmailService
         string subject = "Password Reset Request";
         string body = $"Click the link below to reset your password:\n\n{resetLink}";
 
+        await SendEmailAsync(email, subject, body);
+    }
+
+    public async Task SendRegistrationOTPEmail(string email, string otp)
+    {
+        string subject = "Email Verification OTP";
+        string body = $"Your verification code is: {otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.";
+
+        await SendEmailAsync(email, subject, body);
+    }
+
+    private async Task SendEmailAsync(string toEmail, string subject, string body)
+    {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Tourism Galle", _configuration["EmailSettings:SenderEmail"]));
-        message.To.Add(new MailboxAddress(email, email));
+        message.To.Add(new MailboxAddress(toEmail, toEmail));
         message.Subject = subject;
 
         var bodyBuilder = new BodyBuilder { TextBody = body };
@@ -38,6 +51,6 @@ public class EmailService
             await smtp.DisconnectAsync(true);
         }
 
-        Console.WriteLine($"Reset password email sent to {email}");
+        Console.WriteLine($"Email sent to {toEmail}");
     }
 }

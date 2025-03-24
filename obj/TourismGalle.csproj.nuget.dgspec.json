@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Y3S2\\ITPM\\Tourism_Backend\\TourismGalle.csproj": {}
+    "D:\\6. Year 3 Sem 2\\TOURISM\\Tourism_Galle\\Tourism_Backend\\TourismGalle.csproj": {}
   },
   "projects": {
-    "E:\\Y3S2\\ITPM\\Tourism_Backend\\TourismGalle.csproj": {
+    "D:\\6. Year 3 Sem 2\\TOURISM\\Tourism_Galle\\Tourism_Backend\\TourismGalle.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Y3S2\\ITPM\\Tourism_Backend\\TourismGalle.csproj",
+        "projectUniqueName": "D:\\6. Year 3 Sem 2\\TOURISM\\Tourism_Galle\\Tourism_Backend\\TourismGalle.csproj",
         "projectName": "TourismGalle",
-        "projectPath": "E:\\Y3S2\\ITPM\\Tourism_Backend\\TourismGalle.csproj",
-        "packagesPath": "C:\\Users\\dahan\\.nuget\\packages\\",
-        "outputPath": "E:\\Y3S2\\ITPM\\Tourism_Backend\\obj\\",
+        "projectPath": "D:\\6. Year 3 Sem 2\\TOURISM\\Tourism_Galle\\Tourism_Backend\\TourismGalle.csproj",
+        "packagesPath": "C:\\Users\\subodhi\\.nuget\\packages\\",
+        "outputPath": "D:\\6. Year 3 Sem 2\\TOURISM\\Tourism_Galle\\Tourism_Backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\dahan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\subodhi\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

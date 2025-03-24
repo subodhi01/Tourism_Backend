@@ -22,12 +22,34 @@ namespace TourismGalle.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            Console.WriteLine("Register request received for email: " + user.Email); // Add this line
+            Console.WriteLine("Register request received for email: " + user.Email);
             bool isRegistered = await _authService.Register(user);
             if (!isRegistered)
                 return BadRequest("Email already exists");
 
-            return Ok("User registered successfully");
+            return Ok(new { message = "Registration successful. Please check your email for OTP verification." });
+        }
+
+        // ✅ Verify Email OTP
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] EmailVerificationRequest request)
+        {
+            var result = await _authService.VerifyEmailOTP(request.Email, request.OTP);
+            if (!result)
+                return BadRequest("Invalid or expired OTP");
+
+            return Ok(new { message = "Email verified successfully" });
+        }
+
+        // ✅ Resend OTP
+        [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOTP([FromBody] ResendOTPRequest request)
+        {
+            var result = await _authService.ResendOTP(request.Email);
+            if (!result)
+                return BadRequest("User not found");
+
+            return Ok(new { message = "OTP resent successfully" });
         }
 
         // ✅ Login API
@@ -36,10 +58,11 @@ namespace TourismGalle.Controllers
         {
             var authenticatedUser = await _authService.Login(request.Email, request.Password);
             if (authenticatedUser == null)
-                return Unauthorized("Invalid email or password");
+                return Unauthorized("Invalid email or password, or email not verified");
 
-            return Ok("Login Successfully");
+            return Ok(new { message = "Login Successful", user = authenticatedUser });
         }
+
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
@@ -49,6 +72,7 @@ namespace TourismGalle.Controllers
 
             return Ok("Reset password link has been sent to your email.");
         }
+
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
@@ -58,6 +82,7 @@ namespace TourismGalle.Controllers
 
             return Ok("Password has been reset successfully.");
         }
+
         public class ForgotPasswordRequest
         {
             [Required, EmailAddress]
@@ -73,7 +98,6 @@ namespace TourismGalle.Controllers
             public string NewPassword { get; set; }
         }
 
-        // Login Request DTO
         public class LoginRequest
         {
             [Required, EmailAddress]
@@ -81,6 +105,21 @@ namespace TourismGalle.Controllers
 
             [Required]
             public string Password { get; set; }
+        }
+
+        public class EmailVerificationRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required, StringLength(6, MinimumLength = 6)]
+            public string OTP { get; set; }
+        }
+
+        public class ResendOTPRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
         }
     }
 }
