@@ -22,12 +22,27 @@ namespace TourismGalle.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            Console.WriteLine("Register request received for email: " + user.Email);
-            bool isRegistered = await _authService.Register(user);
-            if (!isRegistered)
-                return BadRequest("Email already exists");
+            try
+            {
+                Console.WriteLine($"Register request received for email: {user.Email}");
+                Console.WriteLine($"Request data: {System.Text.Json.JsonSerializer.Serialize(user)}");
+                
+                bool isRegistered = await _authService.Register(user);
+                if (!isRegistered)
+                {
+                    Console.WriteLine("Registration failed: Email already exists");
+                    return BadRequest("Email already exists");
+                }
 
-            return Ok(new { message = "Registration successful. Please check your email for OTP verification." });
+                Console.WriteLine("Registration successful");
+                return Ok(new { message = "Registration successful. Please check your email for OTP verification." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Registration error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return BadRequest($"Registration failed: {ex.Message}");
+            }
         }
 
         // ✅ Verify Email OTP

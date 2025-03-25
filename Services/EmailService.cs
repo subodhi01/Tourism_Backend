@@ -25,32 +25,60 @@ public class EmailService
 
     public async Task SendRegistrationOTPEmail(string email, string otp)
     {
-        string subject = "Email Verification OTP";
-        string body = $"Your verification code is: {otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.";
+        try
+        {
+            Console.WriteLine($"Attempting to send OTP email to: {email}");
+            string subject = "Email Verification OTP";
+            string body = $"Your verification code is: {otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.";
 
-        await SendEmailAsync(email, subject, body);
+            await SendEmailAsync(email, subject, body);
+            Console.WriteLine($"OTP email sent successfully to: {email}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending OTP email: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            throw; // Re-throw to handle in the calling method
+        }
     }
 
     private async Task SendEmailAsync(string toEmail, string subject, string body)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Tourism Galle", _configuration["EmailSettings:SenderEmail"]));
-        message.To.Add(new MailboxAddress(toEmail, toEmail));
-        message.Subject = subject;
-
-        var bodyBuilder = new BodyBuilder { TextBody = body };
-        message.Body = bodyBuilder.ToMessageBody();
-
-        using (var smtp = new SmtpClient())
+        try
         {
-            await smtp.ConnectAsync(_configuration["EmailSettings:SmtpServer"],
-                                    int.Parse(_configuration["EmailSettings:SmtpPort"]), SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_configuration["EmailSettings:SmtpUsername"],
-                                         _configuration["EmailSettings:SmtpPassword"]);
-            await smtp.SendAsync(message);
-            await smtp.DisconnectAsync(true);
-        }
+            Console.WriteLine($"Preparing to send email to: {toEmail}");
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_configuration["EmailSettings:SenderName"], _configuration["EmailSettings:SenderEmail"]));
+            message.To.Add(new MailboxAddress(toEmail, toEmail));
+            message.Subject = subject;
 
-        Console.WriteLine($"Email sent to {toEmail}");
+            var bodyBuilder = new BodyBuilder { TextBody = body };
+            message.Body = bodyBuilder.ToMessageBody();
+
+            Console.WriteLine($"Connecting to SMTP server: {_configuration["EmailSettings:SmtpServer"]}:{_configuration["EmailSettings:SmtpPort"]}");
+            using (var smtp = new SmtpClient())
+            {
+                await smtp.ConnectAsync(_configuration["EmailSettings:SmtpServer"],
+                                    int.Parse(_configuration["EmailSettings:SmtpPort"]), SecureSocketOptions.StartTls);
+                
+                Console.WriteLine("Authenticating with SMTP server...");
+                await smtp.AuthenticateAsync(_configuration["EmailSettings:SmtpUsername"],
+                                         _configuration["EmailSettings:SmtpPassword"]);
+                
+                Console.WriteLine("Sending email...");
+                await smtp.SendAsync(message);
+                
+                Console.WriteLine("Disconnecting from SMTP server...");
+                await smtp.DisconnectAsync(true);
+            }
+
+            Console.WriteLine($"Email sent successfully to {toEmail}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in SendEmailAsync: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            throw;
+        }
     }
 }
