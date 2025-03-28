@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TourismGalle.Models;
+using TourismGalle.Data;
 
 namespace TourismGalle.Services
 {
@@ -26,12 +27,15 @@ namespace TourismGalle.Services
 
         public async Task AddPlace(Place place)
         {
+            place.CreatedAt = DateTime.UtcNow;
+            place.UpdatedAt = DateTime.UtcNow;
             _context.Places.Add(place);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdatePlace(Place place)
         {
+            place.UpdatedAt = DateTime.UtcNow;
             _context.Places.Update(place);
             await _context.SaveChangesAsync();
         }

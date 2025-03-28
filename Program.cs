@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TourismGalle.Services;
 using TourismGalle.Models;
+using TourismGalle.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("http://localhost:4200") // Angular development server
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials();
         });
 });
 

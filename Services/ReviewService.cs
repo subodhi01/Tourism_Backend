@@ -1,5 +1,6 @@
-using TourismGalle.Models;
 using Microsoft.EntityFrameworkCore;
+using TourismGalle.Models;
+using TourismGalle.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
