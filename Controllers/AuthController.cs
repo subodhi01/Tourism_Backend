@@ -1,13 +1,80 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity.Data;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using TourismGalle.Data;
+//using TourismGalle.Models;
+//using BCrypt.Net;
+//using System.Data.SqlClient;
+//using System;
+
+//namespace TourismGalle.Controllers
+//{
+//    [Route("api/[controller]")]
+//    [ApiController]
+//    public class AuthController : ControllerBase
+//    {
+//        private readonly ApplicationDbContext _context;
+//        private readonly string _connectionString;
+
+//        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+//        {
+//            _context = context;
+//            _connectionString = configuration.GetConnectionString("DefaultConnection");
+//        }
+
+//        [HttpPost("register")]
+//        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+//        {
+//            if (!ModelState.IsValid)
+//            {
+//                return BadRequest(ModelState);
+//            }
+
+//            try
+//            {
+//                // Hash the password
+//                var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+//                // Generate OTP and expiry
+//                var otp = new Random().Next(100000, 999999).ToString();
+//                var otpExpiry = DateTime.UtcNow.AddMinutes(10);
+
+//                // Insert into PendingRegistrations
+//                using (var connection = new SqlConnection(_connectionString))
+//                {
+//                    await connection.OpenAsync();
+//                    using (var command = new SqlCommand("RegisterPendingUser", connection))
+//                    {
+//                        command.CommandType = System.Data.CommandType.StoredProcedure;
+//                        command.Parameters.AddWithValue("@FullName", request.FullName);
+//                        command.Parameters.AddWithValue("@Email", request.Email);
+//                        command.Parameters.AddWithValue("@TelephoneNumber", request.TelephoneNumber);
+//                        command.Parameters.AddWithValue("@PasswordHash", passwordHash);
+//                        command.Parameters.AddWithValue("@Role", request.Role);
+//                        command.Parameters.AddWithValue("@RegistrationOTP", otp);
+//                        command.Parameters.AddWithValue("@RegistrationOTPExpiry", otpExpiry);
+
+//                        await command.ExecuteNonQueryAsync();
+//                    }
+//                }
+
+//                // TODO: Send OTP email (configure EmailService)
+//                return Ok(new { Message = "Registration pending. Please verify OTP." });
+//            }
+//            catch (Exception ex)
+//            {
+//                return StatusCode(500, new { Message = "Registration failed", Error = ex.Message });
+//            }
+//        }
+//    }
+//}
 using Microsoft.AspNetCore.Mvc;
+using TourismGalle.Data;
 using TourismGalle.Models;
 using TourismGalle.Services;
-using TourismGalle.Data;
+using System.Threading.Tasks;
 
 namespace TourismGalle.Controllers
 {
-    [Route("api/auth")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -18,123 +85,138 @@ namespace TourismGalle.Controllers
             _authService = authService;
         }
 
-        // ✅ Register API
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                Console.WriteLine($"Register request received for email: {user.Email}");
-                Console.WriteLine($"Request data: {System.Text.Json.JsonSerializer.Serialize(user)}");
-                
-                bool isRegistered = await _authService.Register(user);
-                if (!isRegistered)
+                var user = new User
                 {
-                    Console.WriteLine("Registration failed: Email already exists");
-                    return BadRequest("Email already exists");
+                    FullName = request.FullName,
+                    Email = request.Email,
+                    TelephoneNumber = request.TelephoneNumber,
+                    Password = request.Password,
+                    Role = request.Role
+                };
+
+                var result = await _authService.Register(user);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Registration failed: Email already exists." });
                 }
 
-                Console.WriteLine("Registration successful");
-                return Ok(new { message = "Registration successful. Please check your email for OTP verification." });
+                return Ok(new { Message = "Registration pending. Please verify OTP." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Registration error: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                return BadRequest($"Registration failed: {ex.Message}");
+                return StatusCode(500, new { Message = "Registration failed", Error = ex.Message });
             }
         }
 
-        // ✅ Verify Email OTP
-        [HttpPost("verify-email")]
-        public async Task<IActionResult> VerifyEmail([FromBody] EmailVerificationRequest request)
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
         {
-            var result = await _authService.VerifyEmailOTP(request.Email, request.OTP);
-            if (!result)
-                return BadRequest("Invalid or expired OTP");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(new { message = "Email verified successfully" });
+            try
+            {
+                var result = await _authService.VerifyEmailOTP(request.Email, request.Otp);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "OTP verification failed: Invalid or expired OTP." });
+                }
+
+                return Ok(new { Message = "OTP verified successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "OTP verification failed", Error = ex.Message });
+            }
         }
 
-        // ✅ Resend OTP
         [HttpPost("resend-otp")]
-        public async Task<IActionResult> ResendOTP([FromBody] ResendOTPRequest request)
+        public async Task<IActionResult> ResendOtp([FromBody] ResendOtpRequest request)
         {
-            var result = await _authService.ResendOTP(request.Email);
-            if (!result)
-                return BadRequest("User not found");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(new { message = "OTP resent successfully" });
+            try
+            {
+                var result = await _authService.ResendOTP(request.Email);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to resend OTP: Email not found." });
+                }
+
+                return Ok(new { Message = "OTP resent successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to resend OTP", Error = ex.Message });
+            }
         }
 
-        // ✅ Login API
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var authenticatedUser = await _authService.Login(request.Email, request.Password);
-            if (authenticatedUser == null)
-                return Unauthorized("Invalid email or password, or email not verified");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(new { message = "Login Successful", user = authenticatedUser });
-        }
+            try
+            {
+                var user = await _authService.Login(request.Email, request.Password);
+                if (user == null)
+                {
+                    return Unauthorized(new { Message = "Invalid email or password, or email not verified." });
+                }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
-        {
-            bool result = await _authService.RequestPasswordReset(request.Email);
-            if (!result)
-                return BadRequest("User not found.");
-
-            return Ok("Reset password link has been sent to your email.");
-        }
-
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
-        {
-            bool result = await _authService.ResetPassword(request.Token, request.NewPassword);
-            if (!result)
-                return BadRequest("Invalid or expired token.");
-
-            return Ok("Password has been reset successfully.");
-        }
-
-        public class ForgotPasswordRequest
-        {
-            [Required, EmailAddress]
-            public string Email { get; set; }
-        }
-
-        public class ResetPasswordRequest
-        {
-            [Required]
-            public string Token { get; set; }
-
-            [Required]
-            public string NewPassword { get; set; }
+                return Ok(new
+                {
+                    user = new
+                    {
+                        id = user.Id.ToString(),
+                        fullName = user.FullName,
+                        email = user.Email,
+                        telephone = user.TelephoneNumber,
+                        profilePhoto = user.ProfilePhoto
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Login failed", Error = ex.Message });
+            }
         }
 
         public class LoginRequest
         {
-            [Required, EmailAddress]
             public string Email { get; set; }
-
-            [Required]
             public string Password { get; set; }
         }
-
-        public class EmailVerificationRequest
-        {
-            [Required, EmailAddress]
-            public string Email { get; set; }
-
-            [Required, StringLength(6, MinimumLength = 6)]
-            public string OTP { get; set; }
-        }
-
-        public class ResendOTPRequest
-        {
-            [Required, EmailAddress]
-            public string Email { get; set; }
-        }
     }
+
+    public class VerifyOtpRequest
+    {
+        public string Email { get; set; }
+        public string Otp { get; set; }
+    }
+
+    public class ResendOtpRequest
+    {
+        public string Email { get; set; }
+    }
+
+
 }
