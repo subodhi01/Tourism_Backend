@@ -35,13 +35,13 @@ namespace TourismGalle.Controllers
         public async Task<ActionResult> AddPlace(Place place)
         {
             await _repository.AddPlaceAsync(place);
-            return CreatedAtAction(nameof(GetPlaceById), new { id = place.PlaceID }, place);
+            return CreatedAtAction(nameof(GetPlaceById), new { id = place.Id }, place);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePlace(int id, Place place)
         {
-            if (id != place.PlaceID)
+            if (id != place.Id)
                 return BadRequest();
 
             await _repository.UpdatePlaceAsync(place);
@@ -55,10 +55,10 @@ namespace TourismGalle.Controllers
             return NoContent();
         }
 
-        [HttpGet("category/{category}")]
-        public async Task<ActionResult<IEnumerable<Place>>> GetPlacesByCategory(string category)
+        [HttpGet("location/{location}")]
+        public async Task<ActionResult<IEnumerable<Place>>> GetPlacesByLocation(string location)
         {
-            var places = await _repository.GetPlacesByCategoryAsync(category);
+            var places = await _repository.GetPlacesByLocationAsync(location);
             return Ok(places);
         }
     }

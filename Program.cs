@@ -24,14 +24,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>(); // Register Email Service
 builder.Services.AddScoped<TourPackageRepository>();
-builder.Services.AddScoped<PlaceService>();
-
-
+builder.Services.AddScoped<PlacesRepository>();
 
 var app = builder.Build();
 

@@ -64,9 +64,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TourismGalle.Controllers.PlaceController",
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
     "Method": "GetAllPlaces",
-    "RelativePath": "api/places",
+    "RelativePath": "api/Places",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -84,9 +84,9 @@
     ]
   },
   {
-    "ContainingType": "TourismGalle.Controllers.PlaceController",
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
     "Method": "AddPlace",
-    "RelativePath": "api/places",
+    "RelativePath": "api/Places",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -100,9 +100,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TourismGalle.Controllers.PlaceController",
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
     "Method": "GetPlaceById",
-    "RelativePath": "api/places/{id}",
+    "RelativePath": "api/Places/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -126,9 +126,9 @@
     ]
   },
   {
-    "ContainingType": "TourismGalle.Controllers.PlaceController",
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
     "Method": "UpdatePlace",
-    "RelativePath": "api/places/{id}",
+    "RelativePath": "api/Places/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -147,9 +147,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TourismGalle.Controllers.PlaceController",
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
     "Method": "DeletePlace",
-    "RelativePath": "api/places/{id}",
+    "RelativePath": "api/Places/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -161,6 +161,32 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TourismGalle.Controllers.PlacesController",
+    "Method": "GetPlacesByLocation",
+    "RelativePath": "api/Places/location/{location}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "location",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TourismGalle.Models.Place, TourismGalle, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "TourismGalle.Controllers.ReviewController",
