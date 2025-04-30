@@ -142,5 +142,14 @@ namespace TourismGalle.Services
                 return (number % 1000000).ToString("D6");
             }
         }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            var users = await _context.Users
+                .FromSqlInterpolated($"EXEC GetUserByEmail @Email={email}")
+                .ToListAsync();
+
+            return users.FirstOrDefault();
+        }
     }
 }
