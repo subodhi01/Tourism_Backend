@@ -191,10 +191,10 @@
         }
       }
     },
-    "/api/places": {
+    "/api/Places": {
       "get": {
         "tags": [
-          "Place"
+          "Places"
         ],
         "responses": {
           "200": {
@@ -230,7 +230,7 @@
       },
       "post": {
         "tags": [
-          "Place"
+          "Places"
         ],
         "requestBody": {
           "content": {
@@ -258,10 +258,10 @@
         }
       }
     },
-    "/api/places/{id}": {
+    "/api/Places/{id}": {
       "get": {
         "tags": [
-          "Place"
+          "Places"
         ],
         "parameters": [
           {
@@ -299,7 +299,7 @@
       },
       "put": {
         "tags": [
-          "Place"
+          "Places"
         ],
         "parameters": [
           {
@@ -339,7 +339,7 @@
       },
       "delete": {
         "tags": [
-          "Place"
+          "Places"
         ],
         "parameters": [
           {
@@ -355,6 +355,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Places/location/{location}": {
+      "get": {
+        "tags": [
+          "Places"
+        ],
+        "parameters": [
+          {
+            "name": "location",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Place"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Place"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Place"
+                  }
+                }
+              }
+            }
           }
         }
       }
