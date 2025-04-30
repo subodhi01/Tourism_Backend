@@ -872,3 +872,4 @@ D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\Touris
 D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\TourismGalle.genruntimeconfig.cache
 D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\ref\TourismGalle.dll
 C:\Y3S2\Tourism_Backend\bin\Debug\net9.0\package-lock.json
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\package-lock.json
