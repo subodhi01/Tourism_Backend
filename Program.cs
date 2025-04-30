@@ -11,10 +11,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200") // Angular development server
+            builder.AllowAnyOrigin()
                    .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials();
+                   .AllowAnyHeader();
         });
 });
 
@@ -25,14 +24,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>(); // Register Email Service
 builder.Services.AddScoped<TourPackageRepository>();
-builder.Services.AddScoped<PlaceService>();
-
-
+builder.Services.AddScoped<PlacesRepository>();
 
 var app = builder.Build();
 
