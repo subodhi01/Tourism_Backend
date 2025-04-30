@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TourismGalle")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e31f601c50234ddfb0c95fd10f49f75eac86fb6d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39e975bfb8ba8cfb5a95e8220c375562d9b08be1")]
 [assembly: System.Reflection.AssemblyProductAttribute("TourismGalle")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TourismGalle")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
