@@ -1,72 +1,4 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using TourismGalle.Data;
-//using TourismGalle.Models;
-//using BCrypt.Net;
-//using System.Data.SqlClient;
-//using System;
-
-//namespace TourismGalle.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class AuthController : ControllerBase
-//    {
-//        private readonly ApplicationDbContext _context;
-//        private readonly string _connectionString;
-
-//        public AuthController(ApplicationDbContext context, IConfiguration configuration)
-//        {
-//            _context = context;
-//            _connectionString = configuration.GetConnectionString("DefaultConnection");
-//        }
-
-//        [HttpPost("register")]
-//        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
-//        {
-//            if (!ModelState.IsValid)
-//            {
-//                return BadRequest(ModelState);
-//            }
-
-//            try
-//            {
-//                // Hash the password
-//                var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-//                // Generate OTP and expiry
-//                var otp = new Random().Next(100000, 999999).ToString();
-//                var otpExpiry = DateTime.UtcNow.AddMinutes(10);
-
-//                // Insert into PendingRegistrations
-//                using (var connection = new SqlConnection(_connectionString))
-//                {
-//                    await connection.OpenAsync();
-//                    using (var command = new SqlCommand("RegisterPendingUser", connection))
-//                    {
-//                        command.CommandType = System.Data.CommandType.StoredProcedure;
-//                        command.Parameters.AddWithValue("@FullName", request.FullName);
-//                        command.Parameters.AddWithValue("@Email", request.Email);
-//                        command.Parameters.AddWithValue("@TelephoneNumber", request.TelephoneNumber);
-//                        command.Parameters.AddWithValue("@PasswordHash", passwordHash);
-//                        command.Parameters.AddWithValue("@Role", request.Role);
-//                        command.Parameters.AddWithValue("@RegistrationOTP", otp);
-//                        command.Parameters.AddWithValue("@RegistrationOTPExpiry", otpExpiry);
-
-//                        await command.ExecuteNonQueryAsync();
-//                    }
-//                }
-
-//                // TODO: Send OTP email (configure EmailService)
-//                return Ok(new { Message = "Registration pending. Please verify OTP." });
-//            }
-//            catch (Exception ex)
-//            {
-//                return StatusCode(500, new { Message = "Registration failed", Error = ex.Message });
-//            }
-//        }
-//    }
-//}
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TourismGalle.Data;
 using TourismGalle.Models;
 using TourismGalle.Services;
@@ -190,7 +122,9 @@ namespace TourismGalle.Controllers
                         fullName = user.FullName,
                         email = user.Email,
                         telephone = user.TelephoneNumber,
-                        profilePhoto = user.ProfilePhoto
+                        profilePhoto = user.ProfilePhoto,
+                        role = user.Role,
+                        isEmailVerified = user.IsEmailVerified
                     }
                 });
             }
@@ -200,23 +134,52 @@ namespace TourismGalle.Controllers
             }
         }
 
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile([FromQuery] string email)
+        {
+            try
+            {
+                var user = await _authService.GetUserByEmail(email);
+                if (user == null)
+                {
+                    return NotFound(new { Message = "User not found" });
+                }
+
+                return Ok(new
+                {
+                    user = new
+                    {
+                        id = user.Id.ToString(),
+                        fullName = user.FullName,
+                        email = user.Email,
+                        telephone = user.TelephoneNumber,
+                        profilePhoto = user.ProfilePhoto,
+                        role = user.Role,
+                        isEmailVerified = user.IsEmailVerified
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to get profile", Error = ex.Message });
+            }
+        }
+
         public class LoginRequest
         {
             public string Email { get; set; }
             public string Password { get; set; }
         }
+
+        public class VerifyOtpRequest
+        {
+            public string Email { get; set; }
+            public string Otp { get; set; }
+        }
+
+        public class ResendOtpRequest
+        {
+            public string Email { get; set; }
+        }
     }
-
-    public class VerifyOtpRequest
-    {
-        public string Email { get; set; }
-        public string Otp { get; set; }
-    }
-
-    public class ResendOtpRequest
-    {
-        public string Email { get; set; }
-    }
-
-
 }
