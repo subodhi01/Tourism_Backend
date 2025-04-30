@@ -24,6 +24,9 @@ namespace TourismGalle.Models
 
         public string? ResetToken { get; set; } // Token for password reset
         public DateTime? ResetTokenExpiry { get; set; } // Expiry time for reset token
-    }
 
+        public string? RegistrationOTP { get; set; } // OTP for email verification
+        public DateTime? RegistrationOTPExpiry { get; set; } // Expiry time for registration OTP
+        public bool IsEmailVerified { get; set; } = false; // Email verification status
+    }
 }

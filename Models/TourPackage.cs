@@ -1,7 +1,10 @@
-﻿namespace TourismGalle.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TourismGalle.Models
 {
     public class TourPackage
     {
+        [Key]
         public int PackageID { get; set; }
         public string PackageName { get; set; }
         public string Description { get; set; }
