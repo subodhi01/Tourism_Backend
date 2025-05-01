@@ -89,6 +89,7 @@ namespace TourismGalle.Services
 
             try
             {
+                // Update main travel place
                 var parameters = new
                 {
                     place.Id,
@@ -103,21 +104,47 @@ namespace TourismGalle.Services
                     place.ContactInfo,
                     place.BookedDates,
                     place.IsActive,
-                    place.UpdatedAt
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 await connection.ExecuteAsync(
-                    "UpdateTravelPlace", parameters, transaction, commandType: CommandType.StoredProcedure);
+                    "UpdateTravelPlace",
+                    parameters,
+                    transaction,
+                    commandType: CommandType.StoredProcedure
+                );
 
-                // Update facilities
+                // Delete existing facilities
                 await connection.ExecuteAsync(
-                    "DeleteTravelPlaceFacilities", new { TravelPlaceId = place.Id }, 
-                    transaction, commandType: CommandType.StoredProcedure);
+                    "DeleteTravelPlaceFacilities",
+                    new { TravelPlaceId = place.Id },
+                    transaction,
+                    commandType: CommandType.StoredProcedure
+                );
 
+                // Add updated facilities
                 foreach (var facility in facilities)
                 {
-                    facility.TravelPlaceId = place.Id;
-                    await AddFacilityAsync(facility, connection, transaction);
+                    var facilityParams = new
+                    {
+                        facility.Id,
+                        TravelPlaceId = place.Id,
+                        facility.Name,
+                        facility.Description,
+                        facility.AveragePrice,
+                        facility.PricePerPerson,
+                        facility.Duration,
+                        facility.Availability,
+                        facility.SpecialNotices,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    await connection.ExecuteAsync(
+                        "AddTravelPlaceFacility",
+                        facilityParams,
+                        transaction,
+                        commandType: CommandType.StoredProcedure
+                    );
                 }
 
                 transaction.Commit();
