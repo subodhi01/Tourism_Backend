@@ -185,5 +185,28 @@ namespace TourismGalle.Services
                 return false;
             }
         }
+
+        public async Task<bool> ResetPasswordForLoggedInUser(string email, string currentPassword, string newPassword)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                // Verify current password
+                if (!VerifyPassword(currentPassword, user.PasswordHash))
+                    return false;
+
+                // Update to new password
+                user.PasswordHash = HashPassword(newPassword);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
