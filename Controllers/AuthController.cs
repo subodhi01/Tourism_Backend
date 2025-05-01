@@ -336,16 +336,20 @@ namespace TourismGalle.Controllers
         {
             [Required, EmailAddress]
             public string Email { get; set; }
-
             [Required]
             public string CurrentPassword { get; set; }
-
             [Required]
             public string NewPassword { get; set; }
-
             [Required]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string ConfirmNewPassword { get; set; }
+        }
+
+        public class DeleteAccountRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+            [Required]
+            public string Password { get; set; }
         }
 
         [HttpPost("reset-password-logged-in")]
@@ -372,6 +376,30 @@ namespace TourismGalle.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "Failed to reset password", Error = ex.Message });
+            }
+        }
+
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.DeleteAccount(request.Email, request.Password);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to delete account: Invalid email or password." });
+                }
+
+                return Ok(new { Message = "Account deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to delete account", Error = ex.Message });
             }
         }
     }

@@ -208,5 +208,28 @@ namespace TourismGalle.Services
                 return false;
             }
         }
+
+        public async Task<bool> DeleteAccount(string email, string password)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                // Verify password before deletion
+                if (!VerifyPassword(password, user.PasswordHash))
+                    return false;
+
+                // Remove the user from the database
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
