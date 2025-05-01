@@ -79,7 +79,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<TourPackageRepository>();
-builder.Services.AddScoped<PlaceService>();
+//builder.Services.AddScoped<PlaceService>();
 
 
 
