@@ -3,6 +3,8 @@ using TourismGalle.Data;
 using TourismGalle.Models;
 using TourismGalle.Services;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace TourismGalle.Controllers
 {
@@ -165,6 +167,43 @@ namespace TourismGalle.Controllers
             }
         }
 
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            Console.WriteLine($"Received profile update request for email: {request.Email}");
+            Console.WriteLine($"New full name: {request.FullName}");
+            Console.WriteLine($"New telephone: {request.TelephoneNumber}");
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("Model validation failed");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Validation error: {error.ErrorMessage}");
+                }
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.UpdateProfile(request.Email, request.FullName, request.TelephoneNumber);
+                if (!result)
+                {
+                    Console.WriteLine("User not found for update");
+                    return NotFound(new { Message = "User not found" });
+                }
+
+                Console.WriteLine("Profile updated successfully");
+                return Ok(new { Message = "Profile updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating profile: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { Message = "Failed to update profile", Error = ex.Message });
+            }
+        }
+
         public class LoginRequest
         {
             public string Email { get; set; }
@@ -180,6 +219,18 @@ namespace TourismGalle.Controllers
         public class ResendOtpRequest
         {
             public string Email { get; set; }
+        }
+
+        public class UpdateProfileRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string FullName { get; set; }
+
+            [Required]
+            public string TelephoneNumber { get; set; }
         }
     }
 }

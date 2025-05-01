@@ -151,5 +151,25 @@ namespace TourismGalle.Services
 
             return users.FirstOrDefault();
         }
+
+        public async Task<bool> UpdateProfile(string email, string fullName, string telephoneNumber)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                user.FullName = fullName;
+                user.TelephoneNumber = telephoneNumber;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
