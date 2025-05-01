@@ -100,8 +100,8 @@ namespace TourismGalle.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null) return false;
 
-            user.ResetToken = Guid.NewGuid().ToString();
-            user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+            user.ResetToken = GenerateOTP();
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(10);
             await _context.SaveChangesAsync();
 
             await _emailService.SendPasswordResetEmail(user.Email, user.ResetToken);
@@ -109,9 +109,23 @@ namespace TourismGalle.Services
             return true;
         }
 
-        public async Task<bool> ResetPassword(string token, string newPassword)
+        public async Task<bool> VerifyResetOTP(string email, string otp)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token && u.ResetTokenExpiry > DateTime.UtcNow);
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.Email == email && 
+                u.ResetToken == otp && 
+                u.ResetTokenExpiry > DateTime.UtcNow);
+
+            return user != null;
+        }
+
+        public async Task<bool> ResetPassword(string email, string otp, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.Email == email && 
+                u.ResetToken == otp && 
+                u.ResetTokenExpiry > DateTime.UtcNow);
+
             if (user == null) return false;
 
             user.PasswordHash = HashPassword(newPassword);
