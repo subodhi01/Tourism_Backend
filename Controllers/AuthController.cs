@@ -402,5 +402,47 @@ namespace TourismGalle.Controllers
                 return StatusCode(500, new { Message = "Failed to delete account", Error = ex.Message });
             }
         }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                Console.WriteLine("Attempting to get all users...");
+                var users = await _authService.GetAllUsers();
+                Console.WriteLine($"Retrieved {users.Count} users");
+
+                var response = new
+                {
+                    users = users.Select(u => new
+                    {
+                        id = u.Id,
+                        fullName = u.FullName,
+                        email = u.Email,
+                        telephone = u.TelephoneNumber,
+                        role = u.Role,
+                        isEmailVerified = u.IsEmailVerified,
+                        profilePhoto = u.ProfilePhoto
+                    })
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers endpoint: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                return StatusCode(500, new { 
+                    Message = "Failed to get users", 
+                    Error = ex.Message,
+                    StackTrace = ex.StackTrace,
+                    InnerException = ex.InnerException?.Message
+                });
+            }
+        }
     }
 }

@@ -231,5 +231,43 @@ namespace TourismGalle.Services
                 return false;
             }
         }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            try
+            {
+                Console.WriteLine("Executing raw SQL query to get all users...");
+                var users = await _context.Users
+                    .FromSqlRaw(@"
+                        SELECT 
+                            Id,
+                            COALESCE(FullName, '') as FullName,
+                            COALESCE(Email, '') as Email,
+                            COALESCE(TelephoneNumber, '') as TelephoneNumber,
+                            COALESCE(Role, 'User') as Role,
+                            IsEmailVerified,
+                            COALESCE(ProfilePhoto, '') as ProfilePhoto,
+                            COALESCE(PasswordHash, '') as PasswordHash,
+                            COALESCE(ResetToken, '') as ResetToken,
+                            ResetTokenExpiry,
+                            COALESCE(RegistrationOTP, '') as RegistrationOTP,
+                            RegistrationOTPExpiry
+                        FROM Users")
+                    .ToListAsync();
+
+                Console.WriteLine($"Retrieved {users.Count} users from database");
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw;
+            }
+        }
     }
 }
