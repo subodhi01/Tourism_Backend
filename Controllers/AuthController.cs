@@ -331,5 +331,48 @@ namespace TourismGalle.Controllers
             [Required]
             public string NewPassword { get; set; }
         }
+
+        public class ResetPasswordLoggedInRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string CurrentPassword { get; set; }
+
+            [Required]
+            public string NewPassword { get; set; }
+
+            [Required]
+            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+        }
+
+        [HttpPost("reset-password-logged-in")]
+        public async Task<IActionResult> ResetPasswordLoggedIn([FromBody] ResetPasswordLoggedInRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPasswordForLoggedInUser(request.Email, request.CurrentPassword, request.NewPassword);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to reset password: Invalid current password or email." });
+                }
+
+                return Ok(new { 
+                    Message = "Password reset successfully. You will be automatically logged out. Please login again with your new password.",
+                    ShouldLogout = true 
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to reset password", Error = ex.Message });
+            }
+        }
     }
 }
