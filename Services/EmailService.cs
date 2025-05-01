@@ -14,13 +14,23 @@ public class EmailService
         _configuration = configuration;
     }
 
-    public async Task SendPasswordResetEmail(string email, string token)
+    public async Task SendPasswordResetEmail(string email, string otp)
     {
-        string resetLink = $"https://yourfrontend.com/reset-password?token={token}";
-        string subject = "Password Reset Request";
-        string body = $"Click the link below to reset your password:\n\n{resetLink}";
+        try
+        {
+            Console.WriteLine($"Attempting to send password reset OTP email to: {email}");
+            string subject = "Password Reset OTP";
+            string body = $"Your password reset code is: {otp}\n\nThis code will expire in 10 minutes.\n\nIf you didn't request this code, please ignore this email.";
 
-        await SendEmailAsync(email, subject, body);
+            await SendEmailAsync(email, subject, body);
+            Console.WriteLine($"Password reset OTP email sent successfully to: {email}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending password reset OTP email: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            throw;
+        }
     }
 
     public async Task SendRegistrationOTPEmail(string email, string otp)

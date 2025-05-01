@@ -204,6 +204,78 @@ namespace TourismGalle.Controllers
             }
         }
 
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.RequestPasswordReset(request.Email);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Email not found." });
+                }
+
+                return Ok(new { Message = "Password reset OTP sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to send password reset OTP", Error = ex.Message });
+            }
+        }
+
+        [HttpPost("verify-reset-otp")]
+        public async Task<IActionResult> VerifyResetOtp([FromBody] VerifyResetOtpRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.VerifyResetOTP(request.Email, request.Otp);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Invalid or expired OTP." });
+                }
+
+                return Ok(new { Message = "OTP verified successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to verify OTP", Error = ex.Message });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPassword(request.Email, request.Otp, request.NewPassword);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to reset password: Invalid OTP or email." });
+                }
+
+                return Ok(new { Message = "Password reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to reset password", Error = ex.Message });
+            }
+        }
+
         public class LoginRequest
         {
             public string Email { get; set; }
@@ -231,6 +303,33 @@ namespace TourismGalle.Controllers
 
             [Required]
             public string TelephoneNumber { get; set; }
+        }
+
+        public class ForgetPasswordRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+        }
+
+        public class VerifyResetOtpRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string Otp { get; set; }
+        }
+
+        public class ResetPasswordRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string Otp { get; set; }
+
+            [Required]
+            public string NewPassword { get; set; }
         }
     }
 }
