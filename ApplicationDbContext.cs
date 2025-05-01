@@ -14,6 +14,7 @@ namespace TourismGalle.Data
         public DbSet<Place> Places { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<TourPackage> TourPackages { get; set; }
+        public DbSet<TravelPlace> TravelPlaces { get; set; }
     }
 }
 

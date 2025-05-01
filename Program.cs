@@ -28,6 +28,8 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>(); // Register Email Service
 builder.Services.AddScoped<TourPackageRepository>();
 builder.Services.AddScoped<PlacesRepository>();
+// Add this line with the other service registrations
+builder.Services.AddScoped<TravelPlaceRepository>();
 
 var app = builder.Build();
 
