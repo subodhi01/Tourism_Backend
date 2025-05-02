@@ -505,5 +505,57 @@ namespace TourismGalle.Controllers
                 return StatusCode(500, new { Message = "Failed to delete user", Error = ex.Message });
             }
         }
+
+        public class CreateUserRequest
+        {
+            [Required]
+            public string FullName { get; set; }
+
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string TelephoneNumber { get; set; }
+
+            [Required]
+            public string Role { get; set; }
+
+            [Required]
+            public string Password { get; set; }
+        }
+
+        [HttpPost("users")]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var user = new User
+                {
+                    FullName = request.FullName,
+                    Email = request.Email,
+                    TelephoneNumber = request.TelephoneNumber,
+                    Password = request.Password,
+                    Role = request.Role,
+                    IsEmailVerified = true // Since admin is creating the user
+                };
+
+                var result = await _authService.CreateUser(user);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to create user: Email already exists." });
+                }
+
+                return Ok(new { Message = "User created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to create user", Error = ex.Message });
+            }
+        }
     }
 }

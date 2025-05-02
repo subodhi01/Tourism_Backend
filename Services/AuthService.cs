@@ -317,5 +317,30 @@ namespace TourismGalle.Services
                 return false;
             }
         }
+
+        public async Task<bool> CreateUser(User user)
+        {
+            try
+            {
+                // Check if email exists
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (emailExists)
+                    return false;
+
+                // Hash the password
+                user.PasswordHash = HashPassword(user.Password);
+
+                // Add to Users table directly since admin is creating
+                await _context.Database.ExecuteSqlInterpolatedAsync(
+                    $"EXEC RegisterUser @FullName={user.FullName}, @Email={user.Email}, @TelephoneNumber={user.TelephoneNumber}, @PasswordHash={user.PasswordHash}, @Role={user.Role}, @RegistrationOTP={null}, @RegistrationOTPExpiry={null}"
+                );
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
