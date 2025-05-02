@@ -1,24 +1,8 @@
 [
   {
     "ContainingType": "TourismGalle.Controllers.AuthController",
-    "Method": "ForgotPassword",
-    "RelativePath": "api/auth/forgot-password",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "TourismGalle.Controllers.AuthController\u002BForgotPasswordRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "TourismGalle.Controllers.AuthController",
     "Method": "Login",
-    "RelativePath": "api/auth/login",
+    "RelativePath": "api/Auth/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -34,14 +18,14 @@
   {
     "ContainingType": "TourismGalle.Controllers.AuthController",
     "Method": "Register",
-    "RelativePath": "api/auth/register",
+    "RelativePath": "api/Auth/register",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "user",
-        "Type": "TourismGalle.Models.User",
+        "Name": "request",
+        "Type": "TourismGalle.Models.RegisterRequest",
         "IsRequired": true
       }
     ],
@@ -49,15 +33,15 @@
   },
   {
     "ContainingType": "TourismGalle.Controllers.AuthController",
-    "Method": "ResendOTP",
-    "RelativePath": "api/auth/resend-otp",
+    "Method": "ResendOtp",
+    "RelativePath": "api/Auth/resend-otp",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "TourismGalle.Controllers.AuthController\u002BResendOTPRequest",
+        "Type": "TourismGalle.Controllers.ResendOtpRequest",
         "IsRequired": true
       }
     ],
@@ -65,31 +49,15 @@
   },
   {
     "ContainingType": "TourismGalle.Controllers.AuthController",
-    "Method": "ResetPassword",
-    "RelativePath": "api/auth/reset-password",
+    "Method": "VerifyOtp",
+    "RelativePath": "api/Auth/verify-otp",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "TourismGalle.Controllers.AuthController\u002BResetPasswordRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "TourismGalle.Controllers.AuthController",
-    "Method": "VerifyEmail",
-    "RelativePath": "api/auth/verify-email",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "TourismGalle.Controllers.AuthController\u002BEmailVerificationRequest",
+        "Type": "TourismGalle.Controllers.VerifyOtpRequest",
         "IsRequired": true
       }
     ],
