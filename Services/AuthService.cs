@@ -269,5 +269,35 @@ namespace TourismGalle.Services
                 throw;
             }
         }
+
+        public async Task<bool> UpdateUser(int id, string fullName, string email, string telephoneNumber, string role)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+                if (user == null)
+                    return false;
+
+                // Check if email is being changed and if it's already in use
+                if (email != user.Email)
+                {
+                    var emailExists = await _context.Users.AnyAsync(u => u.Email == email && u.Id != id);
+                    if (emailExists)
+                        return false;
+                }
+
+                user.FullName = fullName;
+                user.Email = email;
+                user.TelephoneNumber = telephoneNumber;
+                user.Role = role;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

@@ -444,5 +444,47 @@ namespace TourismGalle.Controllers
                 });
             }
         }
+
+        public class UpdateUserRequest
+        {
+            [Required]
+            public int Id { get; set; }
+
+            [Required]
+            public string FullName { get; set; }
+
+            [Required, EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string TelephoneNumber { get; set; }
+
+            [Required]
+            public string Role { get; set; }
+        }
+
+        [HttpPut("users/{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.UpdateUser(id, request.FullName, request.Email, request.TelephoneNumber, request.Role);
+                if (!result)
+                {
+                    return NotFound(new { Message = "User not found or update failed" });
+                }
+
+                return Ok(new { Message = "User updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to update user", Error = ex.Message });
+            }
+        }
     }
 }
