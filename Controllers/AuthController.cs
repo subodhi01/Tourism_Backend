@@ -5,6 +5,7 @@ using TourismGalle.Services;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace TourismGalle.Controllers
 {
@@ -13,10 +14,12 @@ namespace TourismGalle.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(AuthService authService)
+        public AuthController(AuthService authService, ApplicationDbContext context)
         {
             _authService = authService;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -547,14 +550,29 @@ namespace TourismGalle.Controllers
                 var result = await _authService.CreateUser(user);
                 if (!result)
                 {
-                    return BadRequest(new { Message = "Failed to create user: Email already exists." });
+                    // Check which field caused the failure
+                    var emailExists = await _authService.GetUserByEmail(request.Email) != null;
+                    var phoneExists = await _context.Users.AnyAsync(u => u.TelephoneNumber == request.TelephoneNumber);
+
+                    if (emailExists)
+                    {
+                        return BadRequest(new { message = "This email is already registered" });
+                    }
+                    else if (phoneExists)
+                    {
+                        return BadRequest(new { message = "This phone number is already registered" });
+                    }
+                    else
+                    {
+                        return BadRequest(new { message = "Failed to create user" });
+                    }
                 }
 
-                return Ok(new { Message = "User created successfully" });
+                return Ok(new { message = "User created successfully" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "Failed to create user", Error = ex.Message });
+                return StatusCode(500, new { message = "Failed to create user", error = ex.Message });
             }
         }
     }
