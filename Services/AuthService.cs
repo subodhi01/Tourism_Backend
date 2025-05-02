@@ -269,5 +269,78 @@ namespace TourismGalle.Services
                 throw;
             }
         }
+
+        public async Task<bool> UpdateUser(int id, string fullName, string email, string telephoneNumber, string role)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+                if (user == null)
+                    return false;
+
+                // Check if email is being changed and if it's already in use
+                if (email != user.Email)
+                {
+                    var emailExists = await _context.Users.AnyAsync(u => u.Email == email && u.Id != id);
+                    if (emailExists)
+                        return false;
+                }
+
+                user.FullName = fullName;
+                user.Email = email;
+                user.TelephoneNumber = telephoneNumber;
+                user.Role = role;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteUser(int id)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+                if (user == null)
+                    return false;
+
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> CreateUser(User user)
+        {
+            try
+            {
+                // Check if email exists
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (emailExists)
+                    return false;
+
+                // Hash the password
+                user.PasswordHash = HashPassword(user.Password);
+
+                // Add to Users table directly since admin is creating
+                await _context.Database.ExecuteSqlInterpolatedAsync(
+                    $"EXEC RegisterUser @FullName={user.FullName}, @Email={user.Email}, @TelephoneNumber={user.TelephoneNumber}, @PasswordHash={user.PasswordHash}, @Role={user.Role}, @RegistrationOTP={null}, @RegistrationOTPExpiry={null}"
+                );
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
