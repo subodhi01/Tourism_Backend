@@ -877,8 +877,12 @@ D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\refint
 D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\TourismGalle.pdb
 D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\TourismGalle.genruntimeconfig.cache
 D:\6. Year 3 Sem 2\TOURISM\Tourism_Galle\Tourism_Backend\obj\Debug\net9.0\ref\TourismGalle.dll
-<<<<<<< HEAD
 C:\Y3S2\Tourism_Backend\bin\Debug\net9.0\package-lock.json
-=======
->>>>>>> 04b438e581c3f1a3c62b735e64a0c37a1787f25a
 E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\package-lock.json
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\package.json
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\System.Data.SqlClient.dll
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\runtimes\win-arm64\native\sni.dll
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\runtimes\win-x64\native\sni.dll
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\runtimes\win-x86\native\sni.dll
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\runtimes\unix\lib\net8.0\System.Data.SqlClient.dll
+E:\Y3S2\ITPM\Tourism_Backend\bin\Debug\net9.0\runtimes\win\lib\net8.0\System.Data.SqlClient.dll
