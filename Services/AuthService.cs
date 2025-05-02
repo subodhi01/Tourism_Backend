@@ -100,8 +100,8 @@ namespace TourismGalle.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null) return false;
 
-            user.ResetToken = Guid.NewGuid().ToString();
-            user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+            user.ResetToken = GenerateOTP();
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(10);
             await _context.SaveChangesAsync();
 
             await _emailService.SendPasswordResetEmail(user.Email, user.ResetToken);
@@ -109,9 +109,23 @@ namespace TourismGalle.Services
             return true;
         }
 
-        public async Task<bool> ResetPassword(string token, string newPassword)
+        public async Task<bool> VerifyResetOTP(string email, string otp)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token && u.ResetTokenExpiry > DateTime.UtcNow);
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.Email == email && 
+                u.ResetToken == otp && 
+                u.ResetTokenExpiry > DateTime.UtcNow);
+
+            return user != null;
+        }
+
+        public async Task<bool> ResetPassword(string email, string otp, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.Email == email && 
+                u.ResetToken == otp && 
+                u.ResetTokenExpiry > DateTime.UtcNow);
+
             if (user == null) return false;
 
             user.PasswordHash = HashPassword(newPassword);
@@ -140,6 +154,119 @@ namespace TourismGalle.Services
                 rng.GetBytes(otpBytes);
                 uint number = BitConverter.ToUInt32(otpBytes, 0);
                 return (number % 1000000).ToString("D6");
+            }
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            var users = await _context.Users
+                .FromSqlInterpolated($"EXEC GetUserByEmail @Email={email}")
+                .ToListAsync();
+
+            return users.FirstOrDefault();
+        }
+
+        public async Task<bool> UpdateProfile(string email, string fullName, string telephoneNumber)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                user.FullName = fullName;
+                user.TelephoneNumber = telephoneNumber;
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ResetPasswordForLoggedInUser(string email, string currentPassword, string newPassword)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                // Verify current password
+                if (!VerifyPassword(currentPassword, user.PasswordHash))
+                    return false;
+
+                // Update to new password
+                user.PasswordHash = HashPassword(newPassword);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteAccount(string email, string password)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                // Verify password before deletion
+                if (!VerifyPassword(password, user.PasswordHash))
+                    return false;
+
+                // Remove the user from the database
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            try
+            {
+                Console.WriteLine("Executing raw SQL query to get all users...");
+                var users = await _context.Users
+                    .FromSqlRaw(@"
+                        SELECT 
+                            Id,
+                            COALESCE(FullName, '') as FullName,
+                            COALESCE(Email, '') as Email,
+                            COALESCE(TelephoneNumber, '') as TelephoneNumber,
+                            COALESCE(Role, 'User') as Role,
+                            IsEmailVerified,
+                            COALESCE(ProfilePhoto, '') as ProfilePhoto,
+                            COALESCE(PasswordHash, '') as PasswordHash,
+                            COALESCE(ResetToken, '') as ResetToken,
+                            ResetTokenExpiry,
+                            COALESCE(RegistrationOTP, '') as RegistrationOTP,
+                            RegistrationOTPExpiry
+                        FROM Users")
+                    .ToListAsync();
+
+                Console.WriteLine($"Retrieved {users.Count} users from database");
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw;
             }
         }
     }
