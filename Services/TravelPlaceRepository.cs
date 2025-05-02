@@ -127,7 +127,6 @@ namespace TourismGalle.Services
                 {
                     var facilityParams = new
                     {
-                        facility.Id,
                         TravelPlaceId = place.Id,
                         facility.Name,
                         facility.Description,
@@ -135,8 +134,7 @@ namespace TourismGalle.Services
                         facility.PricePerPerson,
                         facility.Duration,
                         facility.Availability,
-                        facility.SpecialNotices,
-                        UpdatedAt = DateTime.UtcNow
+                        facility.SpecialNotices
                     };
 
                     await connection.ExecuteAsync(
