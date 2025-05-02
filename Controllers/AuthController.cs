@@ -486,5 +486,24 @@ namespace TourismGalle.Controllers
                 return StatusCode(500, new { Message = "Failed to update user", Error = ex.Message });
             }
         }
+
+        [HttpDelete("users/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var result = await _authService.DeleteUser(id);
+                if (!result)
+                {
+                    return NotFound(new { Message = "User not found or delete failed" });
+                }
+
+                return Ok(new { Message = "User deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to delete user", Error = ex.Message });
+            }
+        }
     }
 }
