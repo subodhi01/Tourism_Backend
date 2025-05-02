@@ -336,16 +336,20 @@ namespace TourismGalle.Controllers
         {
             [Required, EmailAddress]
             public string Email { get; set; }
-
             [Required]
             public string CurrentPassword { get; set; }
-
             [Required]
             public string NewPassword { get; set; }
-
             [Required]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string ConfirmNewPassword { get; set; }
+        }
+
+        public class DeleteAccountRequest
+        {
+            [Required, EmailAddress]
+            public string Email { get; set; }
+            [Required]
+            public string Password { get; set; }
         }
 
         [HttpPost("reset-password-logged-in")]
@@ -372,6 +376,72 @@ namespace TourismGalle.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "Failed to reset password", Error = ex.Message });
+            }
+        }
+
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.DeleteAccount(request.Email, request.Password);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Failed to delete account: Invalid email or password." });
+                }
+
+                return Ok(new { Message = "Account deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Failed to delete account", Error = ex.Message });
+            }
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                Console.WriteLine("Attempting to get all users...");
+                var users = await _authService.GetAllUsers();
+                Console.WriteLine($"Retrieved {users.Count} users");
+
+                var response = new
+                {
+                    users = users.Select(u => new
+                    {
+                        id = u.Id,
+                        fullName = u.FullName,
+                        email = u.Email,
+                        telephone = u.TelephoneNumber,
+                        role = u.Role,
+                        isEmailVerified = u.IsEmailVerified,
+                        profilePhoto = u.ProfilePhoto
+                    })
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers endpoint: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                return StatusCode(500, new { 
+                    Message = "Failed to get users", 
+                    Error = ex.Message,
+                    StackTrace = ex.StackTrace,
+                    InnerException = ex.InnerException?.Message
+                });
             }
         }
     }

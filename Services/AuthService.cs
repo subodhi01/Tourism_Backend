@@ -208,5 +208,66 @@ namespace TourismGalle.Services
                 return false;
             }
         }
+
+        public async Task<bool> DeleteAccount(string email, string password)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return false;
+
+                // Verify password before deletion
+                if (!VerifyPassword(password, user.PasswordHash))
+                    return false;
+
+                // Remove the user from the database
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            try
+            {
+                Console.WriteLine("Executing raw SQL query to get all users...");
+                var users = await _context.Users
+                    .FromSqlRaw(@"
+                        SELECT 
+                            Id,
+                            COALESCE(FullName, '') as FullName,
+                            COALESCE(Email, '') as Email,
+                            COALESCE(TelephoneNumber, '') as TelephoneNumber,
+                            COALESCE(Role, 'User') as Role,
+                            IsEmailVerified,
+                            COALESCE(ProfilePhoto, '') as ProfilePhoto,
+                            COALESCE(PasswordHash, '') as PasswordHash,
+                            COALESCE(ResetToken, '') as ResetToken,
+                            ResetTokenExpiry,
+                            COALESCE(RegistrationOTP, '') as RegistrationOTP,
+                            RegistrationOTPExpiry
+                        FROM Users")
+                    .ToListAsync();
+
+                Console.WriteLine($"Retrieved {users.Count} users from database");
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllUsers: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw;
+            }
+        }
     }
 }
